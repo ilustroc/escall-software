@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Exports\ReporteDataCarterasExport;
 use App\Exports\AsignacionTecCenterPlaceholderExport;
+use App\Exports\ReporteDataTecCenterMesExport;
+use App\Exports\ReporteTecCenterMesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -122,6 +124,17 @@ class ReporteCarterasController extends Controller
         return Excel::download(
             new AsignacionTecCenterPlaceholderExport,
             "FRMT_RG AGENCIAS EXTERNAS {$lote}.xlsx"
+        );
+    }
+
+    public function exportDataTecCenter(Request $r)
+    {
+        $mes = $r->query('mes'); // YYYY-MM requerido
+        $file = "REPORTE DATA TEC CENTER {$mes}.xlsx";
+    
+        return Excel::download(
+            (new ReporteDataTecCenterMesExport)->forMonth($mes),
+            $file
         );
     }
 
@@ -262,4 +275,18 @@ class ReporteCarterasController extends Controller
 
         return [$sql, $bindings];
     }
+
+    public function exportTecCenterData(Request $r)
+    {
+        $mes = $r->query('mes', Carbon::now()->format('Y-m')); // YYYY-MM
+        // Nombre sugerido (puedes cambiarlo)
+        $suf = Carbon::createFromFormat('Y-m', $mes)->format('d.m');
+        $file = "FRMT_GESTIONES CP - 03.01 ({$suf}).xlsx";
+
+        return Excel::download(
+            (new ReporteTecCenterMesExport)->forMonth($mes),
+            $file
+        );
+    }
 }
+    

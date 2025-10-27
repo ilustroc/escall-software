@@ -94,6 +94,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/reportes/carteras/export-tec', [ReporteCarterasController::class, 'exportAsignacionTec'])
         ->name('reportes.carteras.exportTec');
         
+    Route::get('/reportes/data-tec-center', [ReporteCarterasController::class, 'exportDataTecCenter'])
+        ->name('reportes.carteras.exportDataTecCenter');
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/reportes/tec-center-data', [ReporteCarterasController::class, 'exportTecCenterData'])
+            ->name('reportes.tec.data');
+        });
+        
     /*
      |--------------------------------------------------------------------------
      | Vistas estáticas / utilitarias
