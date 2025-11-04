@@ -4,51 +4,35 @@
   <meta charset="utf-8">
   <title>@yield('title','ESCALL • Administración')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <!-- Forzamos modo claro -->
+  <meta name="color-scheme" content="light">
   <style>
     :root{
-      /* === Tokens === */
-      --brand: #cc3024;           /* Escall rojo corporativo */
-      --brand-600:#b6281d;
-      --brand-50:#fff1ef;
+      /* === Tokens (LIGHT ONLY) === */
+      --brand:#cc3024; --brand-600:#b6281d; --brand-50:#fff1ef;
 
-      --text: #1f2328;
-      --muted:#6b7280;
-      --bg: #f6f7fb;
-      --card:#ffffff;
+      --text:#1f2328; --muted:#6b7280;
+      --bg:#f6f7fb;            /* fondo claro */
+      --card:#ffffff;          /* tarjetas claras */
       --line:#e5e7eb;
-      --shadow: 0 6px 18px rgba(0,0,0,.06);
+      --shadow:0 6px 18px rgba(0,0,0,.06);
 
-      --link:#2c3e50;
-      --active:#0b5ed7;
-      --active-bg:#eef4ff;
+      --link:#2c3e50; --active:#0b5ed7; --active-bg:#eef4ff;
 
-      --ok:#e7f6ef;   --ok-b:#b7ebd0;
+      --ok:#e7f6ef; --ok-b:#b7ebd0;
       --warn:#fff7e6; --warn-b:#ffe58f;
-      --err:#fdecea;  --err-b:#f5c2c7;
+      --err:#fdecea; --err-b:#f5c2c7;
 
-      --radius:12px;
-      --radius-sm:8px;
-      --pad:16px;
-      --pad-sm:10px;
-
-      --container: min(1120px, 92vw);
-    }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --text:#e6e6e6; --muted:#9aa0a6;
-        --bg:#0f1115; --card:#151922; --line:#222732;
-        --link:#91b4ff; --active:#7aa2ff; --active-bg:#13203d;
-        --shadow: 0 12px 28px rgba(0,0,0,.45);
-        --brand-50:#2a0f0d;
-      }
+      --radius:12px; --radius-sm:8px;
+      --pad:16px; --pad-sm:10px;
+      --container:min(1120px,92vw);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; color:var(--text); background:var(--bg);
-      font: 14.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,"Helvetica Neue",Arial,sans-serif;
+      font:14.5px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,"Helvetica Neue",Arial,sans-serif;
     }
     a{color:var(--link); text-decoration:none; transition:.18s color}
     a:hover{color:var(--active)}
@@ -58,22 +42,19 @@
     .wrap{min-height:100%; display:flex; flex-direction:column}
     .container{width:var(--container); margin-inline:auto; padding-inline:12px}
 
-    /* Header sticky */
+    /* Header sticky (fondo claro y opaco) */
     .header{
-      position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(6px);
-      background: color-mix(in srgb, var(--card) 92%, transparent);
+      position:sticky; top:0; z-index:50;
+      background:var(--card);
       border-bottom:1px solid var(--line);
+      box-shadow:0 2px 8px rgba(0,0,0,.04);
     }
-    .bar{
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      padding:10px 0;
-    }
+    .bar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0}
     .brand{display:flex; align-items:center; gap:10px}
     .brand-logo{
       display:inline-grid; place-items:center; width:36px; height:36px; border-radius:10px;
-      background:linear-gradient(145deg, var(--brand), var(--brand-600));
-      color:#fff; font-weight:700;
-      box-shadow: var(--shadow);
+      background:linear-gradient(145deg, var(--brand), var(--brand-600)); color:#fff; font-weight:700;
+      box-shadow:var(--shadow);
     }
     .brand a.title{color:var(--text); font-weight:700; letter-spacing:.2px}
 
@@ -82,35 +63,28 @@
     .nav-item{position:relative}
     .nav-link{
       display:inline-flex; align-items:center; gap:8px;
-      padding:8px 12px; border-radius:10px; border:1px solid transparent;
-      color:var(--text)
+      padding:8px 12px; border-radius:10px; border:1px solid transparent; color:var(--text)
     }
     .nav-link:hover{background:var(--brand-50)}
     .nav-link.active{background:var(--active-bg); color:var(--active); font-weight:600}
-
-    /* Caret */
     .nav-link .caret{display:inline-block; border:4px solid transparent; border-top-color:currentColor; transform:translateY(1px)}
 
     /* Dropdown (hover + teclado) */
     .dropdown{position:relative}
     .menu{
-      position:absolute; inset:auto auto auto 0; top:calc(100% + 8px);
-      display:none; min-width:220px; background:var(--card); border:1px solid var(--line);
-      border-radius:12px; box-shadow:var(--shadow); padding:6px; z-index:60;
+      position:absolute; top:calc(100% + 8px); left:0; display:none; min-width:220px;
+      background:var(--card); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); padding:6px; z-index:60;
     }
-    .dropdown:focus-within .menu,
-    .dropdown:hover .menu{display:block}
-    .menu a{
-      display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; color:var(--text)
-    }
-    .menu a:hover{background:color-mix(in srgb, var(--active-bg) 70%, transparent)}
+    .dropdown:focus-within .menu, .dropdown:hover .menu{display:block}
+    .menu a{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; color:var(--text)}
+    .menu a:hover{background:rgba(11,94,215,.06)}
     .menu a.active{background:var(--active-bg); color:var(--active); font-weight:600}
 
     /* User actions */
     .actions{display:flex; align-items:center; gap:8px}
     .btn{
-      padding:8px 12px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--text);
-      cursor:pointer; transition:.18s;
+      padding:8px 12px; border-radius:10px; border:1px solid var(--line);
+      background:var(--card); color:var(--text); cursor:pointer; transition:.18s;
     }
     .btn:hover{transform:translateY(-1px); box-shadow:var(--shadow)}
     .btn-brand{background:var(--brand); border-color:transparent; color:#fff}
@@ -127,23 +101,17 @@
     .errors ul{margin:8px 0 0 18px; padding:0}
 
     /* ====== Content card ====== */
-    .card{
-      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-      box-shadow:var(--shadow); padding:18px; margin:16px 0;
-    }
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin:16px 0}
 
     /* ====== Breadcrumb ====== */
-    .crumbs{
-      display:flex; gap:8px; align-items:center; color:var(--muted); font-size:.92rem;
-      padding:8px 0 0;
-    }
+    .crumbs{display:flex; gap:8px; align-items:center; color:var(--muted); font-size:.92rem; padding:8px 0 0}
     .crumbs a{color:inherit}
     .crumbs .sep{opacity:.55}
 
     /* ====== Footer ====== */
     .footer{margin-top:auto; padding:18px 0; color:var(--muted); font-size:.92rem}
 
-    /* ====== Modo compacto (tu preferencia) ====== */
+    /* ====== Modo compacto ====== */
     .admin-compact .card{padding:14px}
     .admin-compact .btn{padding:6px 10px}
     .admin-compact .nav-link{padding:6px 10px}
@@ -157,7 +125,7 @@
         display:flex; flex-direction:column; align-items:flex-start; width:100%;
         border-top:1px solid var(--line); padding-top:8px; margin-top:8px;
       }
-      .menu{position:relative; top:auto; inset:auto; box-shadow:none; border:0; padding:0; display:block}
+      .menu{position:relative; top:auto; left:auto; box-shadow:none; border:0; padding:0; display:block}
       .menu a{padding:8px 12px}
     }
   </style>
@@ -220,7 +188,6 @@
   </header>
 
   <main class="container">
-    {{-- Breadcrumb opcional --}}
     @hasSection('crumb')
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href="{{ route('dashboard') }}">Inicio</a>
@@ -229,7 +196,6 @@
       </nav>
     @endif
 
-    {{-- Flash & errores --}}
     @if(session('ok') || session('warn') || session('error') || $errors->any())
       <div class="flash">
         @if(session('ok'))   <div class="ok">{{ session('ok') }}</div> @endif
@@ -248,9 +214,7 @@
   </main>
 
   <footer class="footer">
-    <div class="container">
-      © {{ date('Y') }} Escall Perú — <span style="color:var(--muted)">Panel de Administración</span>
-    </div>
+    <div class="container">© {{ date('Y') }} Escall Perú — <span style="color:var(--muted)">Panel de Administración</span></div>
   </footer>
 
   <script>
@@ -258,22 +222,11 @@
     const btn = document.getElementById('btnHamb');
     if (btn){
       btn.addEventListener('click', () => {
-        const root = document.body;
-        const open = root.classList.toggle('nav-open');
+        const open = document.body.classList.toggle('nav-open');
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
     }
-    // Cerrar dropdown al click fuera (solo en desktop)
-    document.addEventListener('click', (e)=>{
-      const isDrop = e.target.closest('.dropdown');
-      if(!isDrop){
-        document.querySelectorAll('.dropdown .menu').forEach(m => {
-          if (getComputedStyle(m).position === 'absolute') m.style.display = 'none';
-        });
-        // restaurar en hover
-        setTimeout(()=>document.querySelectorAll('.dropdown .menu').forEach(m=>m.style.display=''), 0);
-      }
-    });
   </script>
 </body>
 </html>
+
