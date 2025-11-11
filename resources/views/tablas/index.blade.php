@@ -163,9 +163,9 @@
     --tbl-head-bg: #f8f9fa;
     --tbl-head-text: #555;
     --tbl-stripe-bg: #fdfdfd;
-    --tbl-sticky-bg: #fff;
+    --tbl-sticky-bg: #e11414ff;
     --tbl-total-bg: #f4f6fa;
-    --tbl-grand-total-bg: #e7f6ef;
+    --tbl-grand-total-bg: #17e183ff;
     --tbl-hover-bg: #f0f5ff;
   }
 
