@@ -115,12 +115,11 @@ class GestionesMesController extends Controller
             ->groupBy('d.cartera', 'd.cosecha', DB::raw('DATE(g.fecha_gestion)'), DB::raw($caseRango))
             ->get();
 
-        $wCarteras = ['KP INVEST','TEC CENTER','IMPULSE','COOPERATIVA SAN FRANCISCO JAVIER'];
+        $wCarteras = ['KP INVEST','TEC CENTER','IMPULSE'];
         $wCarteraLabel = [
             'KP INVEST' => 'KPI',
             'TEC CENTER' => 'ALTAMIRA',
             'IMPULSE' => 'IMPULSE',
-            'COOPERATIVA SAN FRANCISCO JAVIER' => 'COOPERATIVA SAN FRANCISCO JAVIER',
         ];
 
         $wPorCosecha = []; $wPorRango = [];

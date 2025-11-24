@@ -41,20 +41,20 @@ Route::middleware('auth')->group(function () {
      |--------------------------------------------------------------------------
      */
     Route::prefix('cargas')->name('cargas.')->group(function () {
-        // Vista principal de cargas
         Route::get('/', fn() => view('cargas.index'))->name('index');
 
-        // Carga de Data (form + upload)
+        // DATA (vista + uploads)
         Route::get('data', [DataController::class, 'form'])->name('data.form');
-        Route::post('data', [DataController::class, 'upload'])->name('data.upload');
+        Route::post('data/upload', [DataController::class, 'upload'])->name('data.upload');
+        Route::post('data/import-csv', [DataController::class, 'importarCsv'])->name('data.import.csv');
 
-        // Carga de gestiones (form + upload)
+        // Gestiones (si las usas)
         Route::get('gestiones', [GestionesController::class, 'form'])->name('gestiones.form');
         Route::post('gestiones', [GestionesController::class, 'upload'])->name('gestiones.upload');
 
-        // Carga SP (form, preview, import)
+        // SP (si las usas)
         Route::get('sp', [GestionesSpController::class, 'form'])->name('sp.form');
-        Route::get('sp/preview', [GestionesSpController::class, 'preview'])->name('sp.preview'); // preview (GET)
+        Route::get('sp/preview', [GestionesSpController::class, 'preview'])->name('sp.preview');
         Route::post('sp/import', [GestionesSpController::class, 'import'])->name('sp.import');
     });
 

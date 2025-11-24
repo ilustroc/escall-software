@@ -27,7 +27,10 @@
       --pad:16px; --pad-sm:10px;
       --container:min(1120px,92vw);
     }
-
+    /* En modo admin-compact usamos un contenedor más ancho */
+    body.admin-compact{
+      --container: min(1400px, 98vw);
+    }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{

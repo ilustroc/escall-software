@@ -15,7 +15,6 @@ class GestionesSemanalController extends Controller
         'KP INVEST'                          => 'KPI',
         'TEC CENTER'                         => 'ALTAMIRA',
         'IMPULSE'                            => 'IMPULSE',
-        'COOPERATIVA SAN FRANCISCO JAVIER'   => 'COOPERATIVA SAN FRANCISCO JAVIER',
     ];
 
     // Orden de rangos (texto exacto que imprimimos)
