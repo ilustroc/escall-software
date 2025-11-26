@@ -1,13 +1,28 @@
 @extends('layouts.app')
 @section('title','Reportes')
-@section('content')
-<h2>Generar Reportes</h2>
-<p>Aquí irá el módulo para generar y descargar reportes.</p>
+@section('crumb','Reportes')
 
-<p>
-  <a class="btn" href="{{ route('reportes.impulse.index') }}">Reporte Impulse</a>
-  <a class="btn" href="{{ route('reportes.kp.index') }}">Reporte Kp Invest</a>
-  <a class="btn" href="{{ route('reportes.tec.index') }}">Reporte Tec Center</a>
-  <a class="btn" href="{{ route('reportes.carteras.index') }}">Reporte Carteras</a>
-</p>
+@section('content')
+    <div class="space-y-6">
+        <header class="space-y-1">
+            <h1 class="text-lg font-semibold text-slate-800">
+                Generar Reportes
+            </h1>
+            <p class="text-xs text-slate-500">
+                Aquí puedes consultar y exportar todos los reportes del software en una sola vista.
+            </p>
+        </header>
+
+        {{-- Impulse --}}
+        @include('reportes.partials.impulse-block')
+
+        {{-- KP INVEST --}}
+        @include('reportes.partials.kp-block')
+
+        {{-- TEC CENTER --}}
+        @include('reportes.partials.tec-block')
+
+        {{-- CARTERAS --}}
+        @include('reportes.partials.carteras-block')
+    </div>
 @endsection

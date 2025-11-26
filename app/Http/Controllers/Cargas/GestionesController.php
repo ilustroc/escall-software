@@ -13,7 +13,7 @@ class GestionesController extends Controller
 {
     public function form(): View
     {
-        return view('cargas.gestiones');
+        return view('cargas.index');
     }
 
     public function upload(GestionesUploadRequest $request): RedirectResponse

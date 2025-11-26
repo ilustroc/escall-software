@@ -13,7 +13,7 @@ class DataController extends Controller
 {
     public function form(): View
     {
-        return view('cargas.data');
+        return view('cargas.index');
     }
 
     public function importarCsv(Request $r): RedirectResponse

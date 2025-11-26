@@ -1,13 +1,26 @@
 @extends('layouts.app')
+
 @section('title','Cargas')
+@section('crumb','Cargas')
+
 @section('content')
-<h2>Cargas</h2>
+    <div class="space-y-6">
+        <header class="space-y-1">
+            <h1 class="text-lg font-semibold text-slate-800">
+                Cargas de información
+            </h1>
+            <p class="text-xs text-slate-500">
+                Desde aquí puedes cargar data, gestiones y ejecutar el SP en una sola vista.
+            </p>
+        </header>
 
-<p>Aquí subiremos gestiones, pagos y propuestas.</p>
+        {{-- GESTIONES --}}
+        @include('cargas.partials.gestiones-block')
 
-<p>
-  <a class="btn" href="{{ route('cargas.gestiones.form') }}">Cargar Gestiones</a>
-  <a class="btn" href="{{ route('cargas.sp.form') }}">Cargar SP</a>
-  <a class="btn" href="{{ route('cargas.data.form') }}">Cargar Data</a>
-</p>
+        {{-- SP --}}
+        @include('cargas.partials.sp-block')
+
+        {{-- DATA --}}
+        @include('cargas.partials.data-block')
+    </div>
 @endsection

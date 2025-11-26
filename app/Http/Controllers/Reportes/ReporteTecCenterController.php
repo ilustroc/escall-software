@@ -24,32 +24,22 @@ class ReporteTecCenterController extends Controller
         $start = $fi.' 00:00:00';
         $endEx = Carbon::parse($ff)->addDay()->startOfDay()->toDateTimeString();
 
+        // backend igual: tabla gestiones, fecha_gestion
         $base = DB::table('gestiones as g')
             ->join('data as d', 'd.dni', '=', 'g.dni')
             ->where('d.cartera', '=', 'TEC CENTER')
             ->where('g.fecha_gestion', '>=', $start)
             ->where('g.fecha_gestion', '<',  $endEx);
 
-        $count = (clone $base)->count();
+        // solo conteo, sin selectRaw ni paginate
+        $tecCount = (clone $base)->count();
 
-        $rows = (clone $base)
-            ->selectRaw("
-                g.dni                                                            AS dni,
-                d.codigo                                                         AS ncuenta,
-                d.cosecha                                                        AS cartera,
-                g.fecha_gestion                                                  AS fecha_gestion,
-                g.status                                                         AS contacto,
-                g.tipificacion                                                   AS resultado,
-                COALESCE(NULLIF(TRIM(g.nombre),''), 'SIN NOMBRE')                AS gestor,
-                g.observacion                                                    AS comentario,
-                g.telefono                                                       AS telefono
-            ")
-            ->orderBy('g.fecha_gestion')
-            ->orderBy('g.dni')
-            ->paginate(100)
-            ->appends(['fi'=>$fi,'ff'=>$ff]);
-
-        return view('reportes.tec-center', compact('fi','ff','rows','count'));
+        // mandamos a la vista general de reportes
+        return view('reportes.index', [
+            'tecFi'    => $fi,
+            'tecFf'    => $ff,
+            'tecCount' => $tecCount,
+        ]);
     }
 
     public function export(Request $request)

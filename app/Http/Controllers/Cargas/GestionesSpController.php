@@ -13,11 +13,14 @@ class GestionesSpController extends Controller
 {
     public function form(): View
     {
-        return view('cargas.sp', [
-            'fi' => now()->startOfMonth()->toDateString(),
-            'ff' => now()->toDateString(),
-            'preview' => null,
-            'count' => null,
+        $fi = now()->startOfMonth()->toDateString();
+        $ff = now()->toDateString();
+
+        return view('cargas.index', [
+            'spFi'      => $fi,
+            'spFf'      => $ff,
+            'spPreview' => null,
+            'spCount'   => null,
         ]);
     }
 
@@ -28,11 +31,11 @@ class GestionesSpController extends Controller
         // Trae primeras 100 filas SIN “cartera”
         [$rows, $total] = $this->fetchFromSpPreview($fi, $ff, 100);
 
-        return view('cargas.sp', [
-            'fi' => $fi,
-            'ff' => $ff,
-            'preview' => $rows,
-            'count' => $total,
+        return view('cargas.index', [
+            'spFi'      => $fi,
+            'spFf'      => $ff,
+            'spPreview' => $rows,
+            'spCount'   => $total,
         ]);
     }
 
@@ -173,6 +176,10 @@ class GestionesSpController extends Controller
         $nombre       = $x['nombre']        ?? $x['agente'] ?? $x['usuario'] ?? null;
         // Ignoramos: $x['cartera'] si existe
 
+        // ⇢ Defaults cuando vienen vacíos
+        $status       = $this->defaultStatus($status);           // <- NO CONTACTO si viene vacío
+        $tipificacion = $this->defaultTipificacion($tipificacion); // <- NO CONTESTA si viene vacío
+
         // Convierte fechas; si fecha_gestion inválida, descarta fila
         $fg = $this->toDate($fechaGestion);
         if (!$fg || !$dni) return null;
@@ -189,6 +196,18 @@ class GestionesSpController extends Controller
             'monto_pago'    => $this->toIntNullable($montoPago),
             'nombre'        => $this->cut($nombre, 150),
         ];
+    }
+
+    private function defaultStatus($v): string
+    {
+        $s = trim((string)$v);
+        return $s === '' ? 'NO CONTACTO' : $s;
+    }
+
+    private function defaultTipificacion($v): string
+    {
+        $s = trim((string)$v);
+        return $s === '' ? 'NO CONTESTA' : $s;
     }
 
     private function toDate($v): ?string

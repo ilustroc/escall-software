@@ -14,7 +14,6 @@ class ReporteImpulseController extends Controller
 {
     public function index(Request $request): View
     {
-        // Fechas (defaults: hoy)
         $fi = $request->query('fi');
         $ff = $request->query('ff');
 
@@ -23,50 +22,43 @@ class ReporteImpulseController extends Controller
         if ($ff < $fi) $ff = $fi;
 
         $start = $fi . ' 00:00:00';
-        $endEx = Carbon::parse($ff)->addDay()->startOfDay()->toDateTimeString(); // fin exclusivo
+        $endEx = Carbon::parse($ff)->addDay()->startOfDay()->toDateTimeString();
 
-        // Query base (se reutiliza)
-        $base = $this->baseQuery($start, $endEx);
+        $base  = $this->baseQuery($start, $endEx);
 
-        // Conteo total y vista previa paginada
-        $count = (clone $base)->count();
-        $rows  = (clone $base)
-            ->selectRaw("
-                g.dni                          AS documento,
-                d.titular                      AS cliente,
-                g.tipificacion                 AS accion,
-                g.status                       AS contacto,
-                COALESCE(NULLIF(TRIM(g.nombre),''),'SIN NOMBRE') AS agente,
-                d.codigo                       AS operacion,
-                d.entidad                      AS entidad,
-                g.fecha_gestion                AS fecha_gestion,
-                g.telefono                     AS telefono,
-                g.observacion                  AS observacion,
-                g.monto_pago                   AS monto_promesa,
-                CASE WHEN g.monto_pago IS NULL OR g.monto_pago=0 THEN 0 ELSE 1 END AS nro_cuotas,
-                g.fecha_pago                   AS fecha_promesa,
-                d.cartera                      AS cartera
-            ")
-            ->orderBy('g.fecha_gestion')
-            ->paginate(100)
-            ->appends(['fi'=>$fi,'ff'=>$ff]); // mantener filtros
+        $count = $base->count();
 
-        return view('reportes.impulse', compact('fi','ff','rows','count'));
+        return view('reportes.index', [
+            'impFi'    => $fi,
+            'impFf'    => $ff,
+            'impCount' => $count,
+        ]);
     }
 
     public function export(Request $request)
     {
         $fi = $request->query('fi');
         $ff = $request->query('ff');
+
         if (!$this->isDate($fi)) $fi = Carbon::today()->toDateString();
         if (!$this->isDate($ff)) $ff = $fi;
         if ($ff < $fi) $ff = $fi;
 
-        $sufijo = ($fi === $ff) ? Carbon::parse($fi)->format('Ymd')
-                                : Carbon::parse($fi)->format('Ymd') . '_' . Carbon::parse($ff)->format('Ymd');
+        // Equipo: 2 o 3 (default 2 si no viene nada)
+        $equipo = (int) $request->query('equipo', 2);
+        if (!in_array($equipo, [2,3])) {
+            $equipo = 2;
+        }
 
-        $filename = "Gestiones Cartera Propia Escall {$sufijo}.xlsx";
-        return Excel::download(new ReporteImpulseExport($fi, $ff), $filename);
+        // Usamos la fecha de inicio para el nombre (como en tu ejemplo)
+        $dia = Carbon::parse($fi)->format('Ymd');
+
+        $filename = "Gestiones Cartera Propia - {$equipo} Escall {$dia}.xlsx";
+
+        return Excel::download(
+            new ReporteImpulseExport($fi, $ff, $equipo),
+            $filename
+        );
     }
 
     // ----------------- helpers -----------------

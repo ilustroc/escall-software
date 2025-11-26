@@ -212,6 +212,7 @@
 
 </div> {{-- .page-metrics --}}
 
+{{-- estilos y script se quedan igual --}}
 <style>
     :root {
         --tbl-border: #e5e7eb;

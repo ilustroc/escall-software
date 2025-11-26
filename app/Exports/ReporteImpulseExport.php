@@ -17,11 +17,13 @@ class ReporteImpulseExport implements FromQuery, WithHeadings, WithMapping, With
 
     private string $fi;
     private string $ff;
+    private ?int $equipo;
 
-    public function __construct(string $fi, string $ff)
+    public function __construct(string $fi, string $ff, ?int $equipo = null)
     {
-        $this->fi = $fi;
-        $this->ff = $ff;
+        $this->fi     = $fi;
+        $this->ff     = $ff;
+        $this->equipo = $equipo;
     }
 
     public function query()
@@ -29,7 +31,7 @@ class ReporteImpulseExport implements FromQuery, WithHeadings, WithMapping, With
         $start = $this->fi . ' 00:00:00';
         $endEx = date('Y-m-d H:i:s', strtotime($this->ff . ' +1 day'));
 
-        return DB::table('gestiones as g')
+        $q = DB::table('gestiones as g')
             ->join('data as d', 'd.dni', '=', 'g.dni')
             ->where('d.cartera', 'like', '%IMPULSE%')
             ->where('g.fecha_gestion', '>=', $start)
@@ -52,6 +54,17 @@ class ReporteImpulseExport implements FromQuery, WithHeadings, WithMapping, With
             ")
             ->orderBy('g.fecha_gestion')
             ->orderBy('g.dni');
+
+        if ($this->equipo === 3) {
+            $q->where('d.entidad', 'BCP');
+        } elseif ($this->equipo === 2) {
+            $q->where(function ($qq) {
+                $qq->whereNull('d.entidad')
+                   ->orWhere('d.entidad', '!=', 'BCP');
+            });
+        }
+
+        return $q;
     }
 
     public function headings(): array
@@ -59,45 +72,52 @@ class ReporteImpulseExport implements FromQuery, WithHeadings, WithMapping, With
         return [
             'DOCUMENTO','CLIENTE','ACCIÓN','CONTACTO','AGENTE','OPERACION','ENTIDAD','EQUIPO',
             'FECHA GESTION','FECHA CITA','TELEFONO','OBSERVACION',
-            'MONTO PROMESA','NRO CUOTAS','FECHA PROMESA','PROCEDENCIA LLAMADA','CARTERA',
+            'MONTO PROMESA','NRO CUOTAS','FECHA PROMESA','PROCEDENCIA LLAMADA',
         ];
     }
 
     public function map($r): array
     {
-        // Convertimos fechas a objetos Carbon para que Excel respete el formato de columna
-        $fg = $r->fecha_gestion ? Carbon::parse($r->fecha_gestion) : null;
-        $fp = $r->fecha_promesa ? Carbon::parse($r->fecha_promesa) : null;
+        // EQUIPO en función de ENTIDAD
+        $equipo = ($r->entidad === 'BCP')
+            ? 'PROPIA 3 - ESCALL'
+            : 'PROPIA 2 - ESCALL';
+
+        // Fechas como texto dd/mm/yy
+        $fg = $r->fecha_gestion
+            ? Carbon::parse($r->fecha_gestion)->format('d/m/y')
+            : '';
+        $fp = $r->fecha_promesa
+            ? Carbon::parse($r->fecha_promesa)->format('d/m/y')
+            : '';
 
         return [
-            $r->documento,
+            (string) $r->documento,     // DOCUMENTO siempre
             $r->cliente,
             $r->accion,
             $r->contacto,
             $r->agente,
-            (string) $r->operacion,     // OPERACION como texto
+            (string) $r->operacion,     // OPERACION
             $r->entidad,
-            'PROPIA 2 - ESCALL',
-            $fg,                        // FECHA GESTION (se formatea abajo)
+            $equipo,
+            $fg,                        // FECHA GESTION
             null,                       // FECHA CITA
-            (string) $r->telefono,      // TELEFONO como texto
+            (string) $r->telefono,      // TELEFONO
             $r->observacion,
             $r->monto_promesa,
             $r->nro_cuotas,
-            $fp,                        // FECHA PROMESA (se formatea abajo)
+            $fp,                        // FECHA PROMESA
             'Predictivo',
-            $r->cartera,
         ];
     }
 
-    // Formatos por columna (según el orden de headings)
+    // Formatos por columna
     public function columnFormats(): array
     {
         return [
+            'A' => NumberFormat::FORMAT_TEXT,   // DOCUMENTO
             'F' => NumberFormat::FORMAT_TEXT,   // OPERACION
-            'I' => 'dd/mm/yyyy',                // FECHA GESTION
             'K' => NumberFormat::FORMAT_TEXT,   // TELEFONO
-            'O' => 'dd/mm/yyyy',                // FECHA PROMESA
         ];
     }
 }
